@@ -154,8 +154,7 @@ it('has the notifications table with correct columns', function () {
 });
 
 it('can seed roles and data is correct', function () {
-    $this->seed(RoleSeeder::class);
-
+    // Roles are already seeded by beforeEach in Pest.php
     $roles = DB::table('roles')->pluck('name')->toArray();
 
     expect($roles)->toContain('admin')

@@ -2,12 +2,7 @@
 
 use App\Models\Role;
 use App\Models\User;
-use Database\Seeders\RoleSeeder;
 use Database\Seeders\UserSeeder;
-
-beforeEach(function () {
-    $this->seed(RoleSeeder::class);
-});
 
 test('guests are redirected to login', function () {
     $this->get('/dashboard')->assertRedirect('/login');
