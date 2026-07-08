@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $karyawanRoleId = Role::where('name', 'karyawan')->value('id');
-        
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
