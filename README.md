@@ -1,6 +1,6 @@
 # 🧠 DigiInventory System
 
-**DigiInventory System** is an internal digital platform designed to streamline inventory tracking, asset distribution, employee borrowing workflows, and incident reporting.
+DigiInventory System is an internal digital platform designed to streamline inventory tracking, asset distribution, employee borrowing workflows, and incident reporting.
 ---
 
 ## 🎯 Project Objective
