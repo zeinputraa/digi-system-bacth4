@@ -12,4 +12,6 @@ enum StatusBorrowingDetail: string
     case Terlambat = 'terlambat';
     case Bermasalah = 'bermasalah';
     case SelesaiBermasalah = 'selesai_bermasalah';
+    case DibatalkanNoShow = 'dibatalkan_no_show';
+    case DibatalkanSla = 'dibatalkan_sla';
 }

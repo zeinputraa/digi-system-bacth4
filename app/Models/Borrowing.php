@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Enums\StatusBorrowing;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Borrowing extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -16,6 +19,7 @@ class Borrowing extends Model
      */
     protected $fillable = [
         'user_id',
+        'kode_peminjaman',
         'tanggal_pengajuan',
         'tanggal_pinjam_rencana',
         'tanggal_kembali_rencana',

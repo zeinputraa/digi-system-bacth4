@@ -4,12 +4,15 @@ namespace App\Models;
 
 use App\Enums\KondisiUnit;
 use App\Enums\StatusBorrowingDetail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BorrowingDetail extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -25,6 +28,7 @@ class BorrowingDetail extends Model
         'tanggal_kembali_aktual',
         'kondisi_saat_pinjam',
         'kondisi_saat_kembali',
+        'hari_terlambat',
     ];
 
     /**

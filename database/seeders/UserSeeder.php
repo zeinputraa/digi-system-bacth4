@@ -17,10 +17,10 @@ class UserSeeder extends Seeder
         $roles = Role::pluck('id', 'name');
 
         $accounts = [
-            ['name' => 'Admin Testing',    'email' => 'admin@telkomsel.test',    'role' => 'admin'],
-            ['name' => 'Staff Testing',    'email' => 'staff@telkomsel.test',    'role' => 'staff'],
-            ['name' => 'Manager Testing',  'email' => 'manager@telkomsel.test',  'role' => 'manager'],
-            ['name' => 'Karyawan Testing', 'email' => 'karyawan@telkomsel.test', 'role' => 'karyawan'],
+            ['name' => 'Admin Testing',    'email' => 'admin@digi.test',    'role' => 'admin'],
+            ['name' => 'Staff Testing',    'email' => 'staff@digi.test',    'role' => 'staff'],
+            ['name' => 'Manager Testing',  'email' => 'manager@digi.test',  'role' => 'manager'],
+            ['name' => 'Karyawan Testing', 'email' => 'karyawan@digi.test', 'role' => 'karyawan'],
         ];
 
         foreach ($accounts as $akun) {
@@ -32,5 +32,11 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
             ]);
         }
+
+        // Seed 50 random users with mixed roles
+        $roleIds = $roles->values()->toArray();
+        User::factory(50)->create([
+            'role_id' => fn () => fake()->randomElement($roleIds),
+        ]);
     }
 }

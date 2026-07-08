@@ -23,7 +23,7 @@ test('karyawan can access dashboard and riwayat but forbidden from admin and ope
     $user = User::factory()->create(['role_id' => $roleKaryawan->id]);
 
     $this->actingAs($user)->get('/dashboard')->assertStatus(200);
-    $this->actingAs($user)->get('/riwayat-peminjaman')->assertStatus(200);
+    $this->actingAs($user)->get('/riwayat-peminjaman')->assertRedirect(route('borrowings.my'));
     $this->actingAs($user)->get('/admin')->assertStatus(403);
     $this->actingAs($user)->get('/operasional')->assertStatus(403);
 });
@@ -33,7 +33,7 @@ test('staff can access operasional but forbidden from admin', function () {
     $user = User::factory()->create(['role_id' => $roleStaff->id]);
 
     $this->actingAs($user)->get('/dashboard')->assertStatus(200);
-    $this->actingAs($user)->get('/operasional')->assertStatus(200);
+    $this->actingAs($user)->get('/operasional')->assertRedirect(route('dashboard'));
     $this->actingAs($user)->get('/admin')->assertStatus(403);
 });
 
@@ -41,9 +41,11 @@ test('admin can access everything', function () {
     $roleAdmin = Role::where('name', 'admin')->first();
     $user = User::factory()->create(['role_id' => $roleAdmin->id]);
 
-    $this->actingAs($user)->get('/dashboard')->assertStatus(200);
-    $this->actingAs($user)->get('/admin')->assertStatus(200);
-    $this->actingAs($user)->get('/operasional')->assertStatus(200);
+    $response = $this->actingAs($user)->get('/dashboard');
+
+    $response->assertStatus(200);
+    $this->actingAs($user)->get('/admin')->assertRedirect(route('dashboard'));
+    $this->actingAs($user)->get('/operasional')->assertRedirect(route('dashboard'));
 });
 
 test('database seeder seeds roles and testing accounts', function () {
@@ -58,22 +60,22 @@ test('database seeder seeds roles and testing accounts', function () {
     $users = User::with('role')->get();
     expect($users->count())->toBe(4);
 
-    $admin = $users->firstWhere('email', 'admin@telkomsel.test');
+    $admin = $users->firstWhere('email', 'admin@digi.test');
     expect($admin)->not->toBeNull()
         ->and($admin->role->name)->toBe('admin')
         ->and($admin->email_verified_at)->not->toBeNull();
 
-    $staff = $users->firstWhere('email', 'staff@telkomsel.test');
+    $staff = $users->firstWhere('email', 'staff@digi.test');
     expect($staff)->not->toBeNull()
         ->and($staff->role->name)->toBe('staff')
         ->and($staff->email_verified_at)->not->toBeNull();
 
-    $manager = $users->firstWhere('email', 'manager@telkomsel.test');
+    $manager = $users->firstWhere('email', 'manager@digi.test');
     expect($manager)->not->toBeNull()
         ->and($manager->role->name)->toBe('manager')
         ->and($manager->email_verified_at)->not->toBeNull();
 
-    $karyawan = $users->firstWhere('email', 'karyawan@telkomsel.test');
+    $karyawan = $users->firstWhere('email', 'karyawan@digi.test');
     expect($karyawan)->not->toBeNull()
         ->and($karyawan->role->name)->toBe('karyawan')
         ->and($karyawan->email_verified_at)->not->toBeNull();

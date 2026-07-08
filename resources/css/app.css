@@ -1,3 +1,333 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   DIGI INVENTORY — Design System
+   ============================================================ */
+
+@layer base {
+    * {
+        font-family: 'Poppins', sans-serif !important;
+    }
+
+    body {
+        @apply bg-surface text-gray-800 antialiased;
+    }
+
+    /* Scrollbar custom */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { @apply bg-transparent; }
+    ::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded-full; }
+    ::-webkit-scrollbar-thumb:hover { @apply bg-gray-400; }
+}
+
+/* ============================================================
+   SIDEBAR LAYOUT
+   ============================================================ */
+@layer components {
+
+    /* ---- App Shell ---- */
+    .app-sidebar {
+        @apply fixed inset-y-0 left-0 z-40 flex flex-col w-60
+               bg-sidebar border-r border-sidebar-border
+               transition-transform duration-300;
+    }
+    .app-topbar {
+        @apply sticky top-0 z-30 flex items-center justify-between
+               h-14 px-6 bg-white border-b border-gray-100 shadow-sm;
+    }
+    .app-content {
+        @apply ml-0 lg:ml-60 min-h-screen flex flex-col;
+    }
+    .app-page {
+        @apply flex-1 p-6;
+    }
+
+    /* ---- Sidebar Nav ---- */
+    .sidebar-logo {
+        @apply flex items-center gap-3 px-5 py-4 border-b border-sidebar-border;
+    }
+    .sidebar-section-label {
+        @apply px-4 pt-5 pb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-500;
+    }
+    .sidebar-link {
+        @apply flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg
+               text-sm font-medium text-gray-400
+               transition-all duration-150 cursor-pointer
+               hover:bg-sidebar-hover hover:text-white;
+    }
+    .sidebar-link.active {
+        @apply bg-sidebar-active text-white border-l-2 border-telkom-600;
+    }
+    .sidebar-link svg {
+        @apply w-4 h-4 shrink-0;
+    }
+
+    /* ---- Stat Cards ---- */
+    .stat-card {
+        @apply bg-white rounded-xl p-5 shadow-card border border-gray-100
+               hover:shadow-card-hover transition-shadow duration-200;
+    }
+    .stat-card-value {
+        @apply text-3xl font-bold text-gray-900 mt-1;
+    }
+    .stat-card-label {
+        @apply text-sm text-gray-500 font-medium;
+    }
+    .stat-card-icon {
+        @apply w-10 h-10 rounded-lg flex items-center justify-center;
+    }
+
+    /* ---- Page Header ---- */
+    .page-header {
+        @apply flex items-center justify-between mb-6;
+    }
+    .page-title {
+        @apply text-xl font-semibold text-gray-900;
+    }
+    .page-subtitle {
+        @apply text-sm text-gray-500 mt-0.5;
+    }
+    .breadcrumb {
+        @apply flex items-center gap-1.5 text-sm text-gray-400;
+    }
+    .breadcrumb-current {
+        @apply text-gray-700 font-medium;
+    }
+
+    /* ---- Cards ---- */
+    .card {
+        @apply bg-white rounded-xl shadow-card border border-gray-100 overflow-hidden;
+    }
+    .card-header {
+        @apply px-5 py-4 border-b border-gray-100 flex items-center justify-between;
+    }
+    .card-title {
+        @apply text-sm font-semibold text-gray-800;
+    }
+    .card-body {
+        @apply p-5;
+    }
+
+    /* ---- Tables ---- */
+    .table-wrapper {
+        @apply card overflow-x-auto;
+    }
+    .table {
+        @apply min-w-full divide-y divide-gray-100;
+    }
+    .table thead {
+        @apply bg-gray-50;
+    }
+    .table th {
+        @apply px-5 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider;
+    }
+    .table td {
+        @apply px-5 py-3.5 text-sm text-gray-700 whitespace-nowrap;
+    }
+    .table tbody tr {
+        @apply hover:bg-gray-50 transition-colors duration-100;
+    }
+
+    /* ---- Badges ---- */
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    }
+    /* Status Borrowing */
+    .badge-diajukan       { @apply bg-yellow-100 text-yellow-800; }
+    .badge-disetujui      { @apply bg-blue-100 text-blue-800; }
+    .badge-berjalan       { @apply bg-green-100 text-green-800; }
+    .badge-selesai        { @apply bg-gray-100 text-gray-600; }
+    .badge-ditolak        { @apply bg-red-100 text-red-800; }
+    .badge-dibatalkan     { @apply bg-gray-100 text-gray-500; }
+    .badge-dibatalkan-otomatis { @apply bg-orange-100 text-orange-800; }
+    /* Status Unit */
+    .badge-tersedia       { @apply bg-emerald-100 text-emerald-800; }
+    .badge-dipinjam       { @apply bg-blue-100 text-blue-800; }
+    .badge-maintenance    { @apply bg-orange-100 text-orange-800; }
+    .badge-hilang         { @apply bg-red-100 text-red-800; }
+    .badge-hilang-permanen{ @apply bg-gray-900 text-white; }
+    /* Kondisi */
+    .badge-baik           { @apply bg-green-100 text-green-800; }
+    .badge-rusak-ringan   { @apply bg-yellow-100 text-yellow-800; }
+    .badge-rusak-berat    { @apply bg-red-100 text-red-800; }
+    /* Insiden */
+    .badge-menunggu       { @apply bg-yellow-100 text-yellow-800; }
+    .badge-terverifikasi  { @apply bg-blue-100 text-blue-800; }
+    .badge-menunggu-admin { @apply bg-orange-100 text-orange-800; }
+    .badge-ditemukan      { @apply bg-gray-100 text-gray-600; }
+    .badge-write-off      { @apply bg-red-100 text-red-800; }
+    /* Roles */
+    .badge-admin          { @apply bg-telkom-100 text-telkom-800; }
+    .badge-staff          { @apply bg-purple-100 text-purple-800; }
+    .badge-manager        { @apply bg-indigo-100 text-indigo-800; }
+    .badge-karyawan       { @apply bg-gray-100 text-gray-700; }
+
+    /* ---- Buttons ---- */
+    .btn {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+               transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1
+               disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+    .btn-primary {
+        @apply btn bg-telkom-600 text-white hover:bg-telkom-700 focus:ring-telkom-500
+               shadow-sm hover:shadow-md;
+    }
+    .btn-secondary {
+        @apply btn bg-white text-gray-700 border border-gray-300
+               hover:bg-gray-50 focus:ring-gray-400;
+    }
+    .btn-danger {
+        @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+    }
+    .btn-success {
+        @apply btn bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500;
+    }
+    .btn-warning {
+        @apply btn bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-400;
+    }
+    .btn-ghost {
+        @apply btn bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-300;
+    }
+    .btn-sm {
+        @apply px-3 py-1.5 text-xs rounded-md;
+    }
+    .btn-icon {
+        @apply p-2 rounded-lg;
+    }
+
+    /* ---- Forms ---- */
+    .form-label {
+        @apply block text-sm font-medium text-gray-700 mb-1;
+    }
+    .form-input {
+        @apply w-full rounded-lg border-gray-300 shadow-sm text-sm
+               focus:border-telkom-500 focus:ring-telkom-500
+               transition duration-150;
+    }
+    .form-select {
+        @apply form-input pr-10;
+    }
+    .form-textarea {
+        @apply form-input resize-y;
+    }
+    .form-group {
+        @apply flex flex-col gap-1;
+    }
+    .form-error {
+        @apply text-xs text-red-600 mt-0.5;
+    }
+    .form-hint {
+        @apply text-xs text-gray-400 mt-0.5;
+    }
+    .form-section {
+        @apply space-y-4;
+    }
+    .form-row {
+        @apply grid gap-4;
+    }
+
+    /* ---- Alert / Flash ---- */
+    .alert {
+        @apply flex items-start gap-3 p-4 rounded-xl border text-sm;
+    }
+    .alert-success {
+        @apply alert bg-emerald-50 border-emerald-200 text-emerald-800;
+    }
+    .alert-error {
+        @apply alert bg-red-50 border-red-200 text-red-800;
+    }
+    .alert-warning {
+        @apply alert bg-amber-50 border-amber-200 text-amber-800;
+    }
+    .alert-info {
+        @apply alert bg-blue-50 border-blue-200 text-blue-800;
+    }
+
+    /* ---- Tabs ---- */
+    .tabs {
+        @apply flex gap-1 border-b border-gray-200 mb-5;
+    }
+    .tab-link {
+        @apply px-4 py-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent
+               hover:text-gray-700 hover:border-gray-300 transition-all duration-150 cursor-pointer -mb-px;
+    }
+    .tab-link.active {
+        @apply text-telkom-600 border-telkom-600;
+    }
+
+    /* ---- Empty State ---- */
+    .empty-state {
+        @apply flex flex-col items-center justify-center py-16 text-center;
+    }
+    .empty-state-icon {
+        @apply w-16 h-16 text-gray-300 mb-4;
+    }
+    .empty-state-title {
+        @apply text-base font-semibold text-gray-500;
+    }
+    .empty-state-desc {
+        @apply text-sm text-gray-400 mt-1;
+    }
+
+    /* ---- Timeline ---- */
+    .timeline {
+        @apply relative pl-6 space-y-4;
+    }
+    .timeline::before {
+        content: '';
+        @apply absolute left-2 top-0 bottom-0 w-px bg-gray-200;
+    }
+    .timeline-item {
+        @apply relative;
+    }
+    .timeline-dot {
+        @apply absolute -left-6 top-1 w-4 h-4 rounded-full border-2 border-white
+               flex items-center justify-center;
+    }
+
+    /* ---- Pagination (override Breeze default) ---- */
+    nav[aria-label="Pagination Navigation"] span,
+    nav[aria-label="Pagination Navigation"] a {
+        @apply !rounded-lg !text-sm;
+    }
+}
+
+/* ============================================================
+   FULLCALENDAR overrides
+   ============================================================ */
+.fc .fc-toolbar-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+.fc .fc-button-primary {
+    background-color: #E10600 !important;
+    border-color: #E10600 !important;
+}
+.fc .fc-button-primary:hover {
+    background-color: #B80000 !important;
+    border-color: #B80000 !important;
+}
+.fc .fc-daygrid-event {
+    font-size: 11px !important;
+    border-radius: 4px !important;
+}
+.fc-availability-full     { background-color: #ef4444 !important; border-color: #ef4444 !important; }
+.fc-availability-partial  { background-color: #f59e0b !important; border-color: #f59e0b !important; }
+.fc-availability-open     { background-color: #10b981 !important; border-color: #10b981 !important; }
+
+/* ============================================================
+   MISC UTILITIES
+   ============================================================ */
+.avatar {
+    @apply inline-flex items-center justify-center rounded-full font-semibold text-white;
+}
+.divider {
+    @apply border-t border-gray-100 my-5;
+}
+.skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+}
