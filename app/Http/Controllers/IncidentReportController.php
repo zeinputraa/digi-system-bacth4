@@ -8,6 +8,7 @@ use App\Enums\StatusBorrowingDetail;
 use App\Enums\StatusGantiRugi;
 use App\Enums\StatusInsiden;
 use App\Enums\StatusUnit;
+use App\Models\Borrowing;
 use App\Models\BorrowingDetail;
 use App\Models\IncidentReport;
 use Illuminate\Http\RedirectResponse;
@@ -248,13 +249,13 @@ class IncidentReportController extends Controller
         });
 
         return redirect()->route('incidents.show', $incident->id)
-            ->with('success', 'Laporan insiden berhasil difinalisasi oleh ' . (auth()->user()->hasRole('manager') ? 'Manager' : 'Admin') . '.');
+            ->with('success', 'Laporan insiden berhasil difinalisasi oleh '.(auth()->user()->hasRole('manager') ? 'Manager' : 'Admin').'.');
     }
 
     /**
      * Check if all details are completed and close parent borrowing.
      */
-    private function checkAndCloseParentBorrowing(\App\Models\Borrowing $borrowing): void
+    private function checkAndCloseParentBorrowing(Borrowing $borrowing): void
     {
         $allDone = ! BorrowingDetail::where('borrowing_id', $borrowing->id)
             ->whereIn('status', [

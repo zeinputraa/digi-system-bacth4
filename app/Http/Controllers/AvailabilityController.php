@@ -26,14 +26,25 @@ class AvailabilityController extends Controller
             ->whereIn('status', [StatusUnit::Tersedia->value, StatusUnit::Dipinjam->value])
             ->count();
 
-        // Fetch holidays for the month
+        // Single query: get all holidays in the month
         $holidays = Holiday::whereBetween('tanggal', [$start->format('Y-m-d'), $end->format('Y-m-d')])
             ->get()
-            ->keyBy(function ($item) {
-                return $item->tanggal->format('Y-m-d');
-            });
+            ->keyBy(fn ($item) => $item->tanggal->format('Y-m-d'));
 
         $today = Carbon::today();
+
+        // Single query: fetch all overlapping bookings for the month in one shot
+        $allBookedDetails = BorrowingDetail::where('product_id', $product->id)
+            ->whereHas('borrowing', function ($q) use ($start, $end) {
+                $q->whereIn('status', [
+                    StatusBorrowing::Disetujui->value,
+                    StatusBorrowing::Berjalan->value,
+                ])
+                    ->where('tanggal_pinjam_rencana', '<=', $end->format('Y-m-d'))
+                    ->where('tanggal_kembali_rencana', '>=', $start->format('Y-m-d'));
+            })
+            ->with('borrowing:id,tanggal_pinjam_rencana,tanggal_kembali_rencana')
+            ->get();
 
         $hasil = [];
         for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
@@ -62,15 +73,13 @@ class AvailabilityController extends Controller
                 continue;
             }
 
-            $terpakai = BorrowingDetail::where('product_id', $product->id)
-                ->whereHas('borrowing', function ($q) use ($date) {
-                    $q->whereIn('status', [
-                        StatusBorrowing::Disetujui->value,
-                        StatusBorrowing::Berjalan->value,
-                    ])
-                        ->where('tanggal_pinjam_rencana', '<=', $date->format('Y-m-d'))
-                        ->where('tanggal_kembali_rencana', '>=', $date->format('Y-m-d'));
-                })->count();
+            // Filter in memory: count details whose borrowing period overlaps this date
+            $terpakai = $allBookedDetails->filter(function ($detail) use ($dateStr) {
+                $bStart = $detail->borrowing->tanggal_pinjam_rencana->format('Y-m-d');
+                $bEnd = $detail->borrowing->tanggal_kembali_rencana->format('Y-m-d');
+
+                return $bStart <= $dateStr && $bEnd >= $dateStr;
+            })->count();
 
             $tersedia = max(0, $totalUnits - $terpakai);
             $hasil[$dateStr] = [

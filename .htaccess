@@ -1,0 +1,31 @@
+# ============================================================
+# Root .htaccess — Hostinger Shared Hosting
+#
+# Routes all traffic to the Laravel public/ directory so that
+# the document root does NOT need to be changed in cPanel/hPanel.
+# Also blocks direct access to sensitive files.
+# ============================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # ── Protect sensitive files ────────────────────────────────
+    RewriteRule ^(\.env|composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|artisan)$ - [F,L]
+
+    # ── Block direct access to non-public directories ──────────
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/.*)?$ - [F,L]
+
+    # ── Route everything else through public/ ──────────────────
+    # Skip if already targeting public/
+    RewriteCond %{REQUEST_URI} !^/public/
+    # Skip real files/dirs inside public/
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} !-f
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} !-d
+    # Send to public/index.php
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # For requests that ARE targeting public/ strip the prefix and serve normally
+    RewriteCond %{REQUEST_URI} ^/public/
+    RewriteRule ^public/(.*)$ public/$1 [L]
+</IfModule>

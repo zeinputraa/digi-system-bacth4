@@ -22,30 +22,45 @@ class SendOverdueNotifications extends Command
         $details = BorrowingDetail::whereIn('status', [
             StatusBorrowingDetail::Dipinjam->value,
             StatusBorrowingDetail::Terlambat->value,
-        ])->get();
+        ])->with('borrowing.borrower')->get();
+
+        if ($details->isEmpty()) {
+            $this->info('Overdue check complete. No active borrowings.');
+
+            return;
+        }
 
         $recipients = User::whereHas('role', function ($q) {
             $q->whereIn('name', ['admin', 'staff']);
         })->get();
 
+        // Single query: fetch all holidays between the earliest planned return and today
+        $earliest = $details->min('tanggal_kembali_rencana');
+        $today = now();
+        $holidayDates = [];
+        if ($earliest && $today->gt(Carbon::parse($earliest))) {
+            $holidayDates = Holiday::whereBetween('tanggal', [
+                Carbon::parse($earliest)->format('Y-m-d'),
+                $today->format('Y-m-d'),
+            ])->pluck('tanggal')->map(fn ($t) => $t->format('Y-m-d'))->flip()->all();
+        }
+
         $sentCount = 0;
 
         foreach ($details as $detail) {
             $planned = Carbon::parse($detail->tanggal_kembali_rencana);
-            $today = now();
 
             if ($today->gt($planned)) {
                 $lateDays = 0;
                 $temp = $planned->copy()->addDay();
                 while ($temp->lte($today)) {
-                    if (! $temp->isWeekend() && ! Holiday::where('tanggal', $temp->format('Y-m-d'))->exists()) {
+                    if (! $temp->isWeekend() && ! isset($holidayDates[$temp->format('Y-m-d')])) {
                         $lateDays++;
                     }
                     $temp->addDay();
                 }
 
                 if ($lateDays > 0) {
-                    // Update status detail di DB menjadi Terlambat
                     $detail->update([
                         'status' => StatusBorrowingDetail::Terlambat->value,
                         'hari_terlambat' => $lateDays,
@@ -62,13 +77,11 @@ class SendOverdueNotifications extends Command
                         ->exists();
 
                     if (! $alreadySent) {
-                        // 1. Kirim ke peminjam
                         $borrower = $detail->borrowing->borrower;
                         if ($borrower) {
                             $borrower->notify(new BorrowingOverdue($detail, $lateDays));
                         }
 
-                        // 2. Kirim ke Admin & Staff
                         foreach ($recipients as $user) {
                             $user->notify(new BorrowingOverdue($detail, $lateDays));
                         }

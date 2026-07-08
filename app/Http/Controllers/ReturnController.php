@@ -58,12 +58,15 @@ class ReturnController extends Controller
         $lateDays = 0;
 
         if ($actualReturnDate->gt($plannedReturnDate)) {
+            // Single query: fetch all holidays in the overdue window
+            $holidayDates = Holiday::whereBetween('tanggal', [
+                $plannedReturnDate->copy()->addDay()->format('Y-m-d'),
+                $actualReturnDate->format('Y-m-d'),
+            ])->pluck('tanggal')->map(fn ($t) => $t->format('Y-m-d'))->flip()->all();
+
             $tempDate = $plannedReturnDate->copy()->addDay();
             while ($tempDate->lte($actualReturnDate)) {
-                $isWeekend = $tempDate->isWeekend();
-                $isHoliday = Holiday::where('tanggal', $tempDate->format('Y-m-d'))->exists();
-
-                if (! $isWeekend && ! $isHoliday) {
+                if (! $tempDate->isWeekend() && ! isset($holidayDates[$tempDate->format('Y-m-d')])) {
                     $lateDays++;
                 }
                 $tempDate->addDay();
@@ -128,14 +131,15 @@ class ReturnController extends Controller
             $lateDays = 0;
 
             if ($actualReturnDate->gt($plannedReturnDate)) {
+                // Single query: fetch all holidays in the overdue window
+                $holidayDates = Holiday::whereBetween('tanggal', [
+                    $plannedReturnDate->copy()->addDay()->format('Y-m-d'),
+                    $actualReturnDate->format('Y-m-d'),
+                ])->pluck('tanggal')->map(fn ($t) => $t->format('Y-m-d'))->flip()->all();
+
                 $tempDate = $plannedReturnDate->copy()->addDay();
                 while ($tempDate->lte($actualReturnDate)) {
-                    // Cek weekend
-                    $isWeekend = $tempDate->isWeekend();
-                    // Cek hari libur nasional di database
-                    $isHoliday = Holiday::where('tanggal', $tempDate->format('Y-m-d'))->exists();
-
-                    if (! $isWeekend && ! $isHoliday) {
+                    if (! $tempDate->isWeekend() && ! isset($holidayDates[$tempDate->format('Y-m-d')])) {
                         $lateDays++;
                     }
                     $tempDate->addDay();

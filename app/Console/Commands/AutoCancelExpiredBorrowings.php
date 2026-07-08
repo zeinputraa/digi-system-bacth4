@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\StatusBorrowing;
 use App\Enums\StatusBorrowingDetail;
 use App\Models\Borrowing;
+use App\Models\BorrowingDetail;
 use Illuminate\Console\Command;
 
 class AutoCancelExpiredBorrowings extends Command
@@ -33,24 +34,29 @@ class AutoCancelExpiredBorrowings extends Command
      */
     public function handle(): int
     {
-        $expired = Borrowing::where('status', StatusBorrowing::Diajukan->value)
+        $expiredIds = Borrowing::where('status', StatusBorrowing::Diajukan->value)
             ->where('tanggal_pinjam_rencana', '<', now()->format('Y-m-d'))
-            ->get();
+            ->pluck('id');
 
-        foreach ($expired as $borrowing) {
-            $borrowing->update([
-                'status' => StatusBorrowing::DibatalkanOtomatis->value,
-            ]);
+        if ($expiredIds->isEmpty()) {
+            $this->info('Auto-cancel: tidak ada peminjaman yang expired.');
 
-            // Gunakan DibatalkanSla (bukan DibatalkanNoShow) karena konteksnya
-            // adalah pengajuan yang tidak sempat diproses Staff — bukan
-            // soal pengambilan fisik yang tidak dilakukan peminjam.
-            $borrowing->details()->update([
-                'status' => StatusBorrowingDetail::DibatalkanSla->value,
-            ]);
+            return Command::SUCCESS;
         }
 
-        $this->info("Auto-cancelled {$expired->count()} expired borrowings.");
+        // Batch update both parent and details in two queries
+        Borrowing::whereIn('id', $expiredIds)->update([
+            'status' => StatusBorrowing::DibatalkanOtomatis->value,
+        ]);
+
+        // Gunakan DibatalkanSla (bukan DibatalkanNoShow) karena konteksnya
+        // adalah pengajuan yang tidak sempat diproses Staff — bukan
+        // soal pengambilan fisik yang tidak dilakukan peminjam.
+        BorrowingDetail::whereIn('borrowing_id', $expiredIds)->update([
+            'status' => StatusBorrowingDetail::DibatalkanSla->value,
+        ]);
+
+        $this->info("Auto-cancelled {$expiredIds->count()} expired borrowings.");
 
         return Command::SUCCESS;
     }

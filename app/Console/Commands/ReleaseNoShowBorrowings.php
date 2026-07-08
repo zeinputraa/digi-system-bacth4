@@ -45,13 +45,20 @@ class ReleaseNoShowBorrowings extends Command
         $isDryRun = (bool) $this->option('dry-run');
         $today = Carbon::today();
 
+        // Single query: pre-load holidays for the next ~60 days to avoid per-iteration DB hits
+        $holidayDates = Holiday::whereBetween('tanggal', [
+            $today->format('Y-m-d'),
+            $today->copy()->addDays(60)->format('Y-m-d'),
+        ])->pluck('tanggal')->map(fn ($t) => $t->format('Y-m-d'))->flip()->all();
+
         $noShowBookings = Borrowing::with(['details.productUnit'])
             ->where('status', StatusBorrowing::Disetujui->value)
             ->get()
-            ->filter(function (Borrowing $booking) use ($today): bool {
+            ->filter(function (Borrowing $booking) use ($today, $holidayDates): bool {
                 // Hitung 1 hari kerja setelah tanggal_pinjam_rencana
                 $deadline = $this->nextWorkingDay(
-                    Carbon::parse($booking->tanggal_pinjam_rencana)
+                    Carbon::parse($booking->tanggal_pinjam_rencana),
+                    $holidayDates
                 );
 
                 // Bukan no-show kalau belum melewati batas
@@ -115,12 +122,14 @@ class ReleaseNoShowBorrowings extends Command
     /**
      * Hitung hari kerja pertama setelah tanggal yang diberikan.
      * Skip hari Sabtu, Minggu, dan hari libur nasional dari tabel holidays.
+     *
+     * @param  array<string, int>  $holidayDates  Flipped pluck from holiday table (date string => index)
      */
-    private function nextWorkingDay(Carbon $date): Carbon
+    private function nextWorkingDay(Carbon $date, array $holidayDates = []): Carbon
     {
         $next = $date->copy()->addDay();
 
-        while ($next->isWeekend() || Holiday::where('tanggal', $next->format('Y-m-d'))->exists()) {
+        while ($next->isWeekend() || isset($holidayDates[$next->format('Y-m-d')])) {
             $next->addDay();
         }
 

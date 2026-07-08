@@ -31,11 +31,11 @@ class NotificationController extends Controller
     }
 
     /**
-     * Tandai semua notifikasi dibaca.
+     * Tandai semua notifikasi dibaca (single bulk UPDATE).
      */
     public function readAll(): RedirectResponse
     {
-        auth()->user()->unreadNotifications->markAsRead();
+        auth()->user()->unreadNotifications()->update(['read_at' => now()]);
 
         return redirect()->back()->with('success', 'Semua notifikasi berhasil ditandai sebagai dibaca.');
     }
