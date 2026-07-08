@@ -1,6 +1,7 @@
 # 🧠 DigiInventory System
 
 **DigiInventory System** is an internal digital platform designed to streamline inventory tracking, asset distribution, employee borrowing workflows, and incident reporting.
+
 ---
 
 ## 🎯 Project Objective
@@ -12,49 +13,42 @@ This platform aims to manage, allocate, track, and monitor company assets and in
 ## 🧩 Key Features
 
 - **User & Role Management**
-  - Role-based access control (RBAC): Admin, Staff, Manager, and Karyawan (Employee)
+  - Role-based access: Admin, Staff, Manager, Karyawan
   - Custom role middleware and session-based profile management
 
-- **Inventory & Asset Catalog**
+- **Inventory & Catalog Management**
   - Categorization of inventory items
-  - Product unit tracking (individual items with unique serial numbers, condition status, and availability)
-  - Direct QR Code generation for asset units (`simple-qrcode`) for quick scanning
+  - Detailed unit physical tracking (serial numbers, conditions, availability)
 
-- **Asset Borrowing & Return Workflow**
-  - Employees (Karyawan) can request asset borrowing with calendar/availability validation
-  - SLA validations for borrowing approvals (excluding national holidays)
-  - Manager approval for specific high-value items/requests
-  - Staff handover confirmation & letter generation (export to PDF)
-  - Searchable return logs and check-in system
+- **Asset Borrowing Workflow**
+  - Request submission with custom calendar availability check
+  - Automatic SLA collision & FIFO queue checks
 
-- **Procurement Requests**
-  - Manager can request procurement of new products
-  - Admin/Staff can verify, approve, or reject procurement requests
+- **Handover & Return Control**
+  - Staff handover scan and confirmation
+  - Return verification with automated SLA late-days calculation (excluding weekends and national holidays)
 
-- **Incident & Damage Reporting**
-  - Employees can report incidents (damage or loss of borrowed units)
-  - Admin & Staff verification process
-  - Finalization of incidents by Managers or Admins
+- **Incident & Damage Logs**
+  - Employee incident reporting (damage, loss)
+  - Multi-level review, verification, and finalization workflow
 
-- **Periodic Reports & Exporting**
-  - Auto-generated periodic activity reports
-  - Export data to PDF (`barryvdh/laravel-dompdf`) or Excel (`maatwebsite/excel`)
+- **Procurement Request Panel**
+  - Manager procurement requests for new inventory stock
+  - Admin/Staff validation and approval
 
-- **SLA & Calendar Integrations**
-  - Public holidays synchronization and management to ensure SLA and duration calculations exclude non-working days
-
-- **Notifications & Audit Logging**
-  - In-app alerts for borrowing status updates, returns, and incident reporting
-  - Admin log monitoring and API Token management
+- **Reporting & Asset Labels**
+  - Periodic activity report builder (export to PDF/Excel)
+  - Custom asset label choosing and QR code printing
 
 ---
 
 ## 🔐 Security & Performance
 
-- Role-based middleware for security access control
-- API tokens generated securely for administrative integrations
-- Unique QR-based endpoints for quick unit scans without authentication
-- Integrated CSRF protection and Laravel-standard security practices
+- Secure token-based API access via Laravel Sanctum
+- Role-based middleware for routing access control
+- Automated FIFO queue tracking preventing double-booking
+- Scalable database schema supporting hundreds of concurrent borrowings
+- High availability with automated SLA calculations
 
 ---
 
@@ -67,14 +61,10 @@ This platform aims to manage, allocate, track, and monitor company assets and in
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: Blade Templates + Tailwind CSS + Alpine.js (via Vite)
-- **Backend**: Laravel 13 (PHP ^8.3)
-- **Database**: MySQL
-- **Dependencies**: 
-  - `barryvdh/laravel-dompdf` for PDF generation
-  - `maatwebsite/excel` for Excel exports
-  - `simplesoftwareio/simple-qrcode` for QR code generation
-  - `laravel/sanctum` for API Token authorization
+- **Frontend**: Blade + Tailwind CSS + Alpine.js
+- **Backend**: Laravel (REST API / Web Controller)
+- **Database**: MySQL / PostgreSQL
+- **Auth**: Laravel Breeze (Session) / Sanctum (Tokens)
 
 ---
 
@@ -83,13 +73,14 @@ This platform aims to manage, allocate, track, and monitor company assets and in
 | Repository | Description |
 |------------|-------------|
 | `digi-inventory` | Main repository containing Laravel backend code, views, migrations, and assets |
+| `files`  | Supporting document templates and asset databases |
 
 ---
 
-## 🧪 Seeded Test Accounts
+## 🧪 Test Accounts & Roles
 
 | Role | Email | Password |
-|---|---|---|
+|------|-------|----------|
 | Admin | `admin@digi.test` | `password` |
 | Staff | `staff@digi.test` | `password` |
 | Manager | `manager@digi.test` | `password` |
@@ -113,6 +104,11 @@ This platform aims to manage, allocate, track, and monitor company assets and in
 
 ---
 
-## 🎓 Corporate Support
+## 🎓 Academic Support
 
-This project is proudly supported by the company through its commitment to building digital solutions and fostering innovation in internal enterprise transformation.
+This project is proudly supported by **Telkom University Surabaya**  
+through its commitment to building strong industry partnerships and fostering innovation in digital transformation.
+
+> As an academic institution, Telkom University Surabaya actively supports industry-driven projects and collaborative research by contributing expertise, resources, and community engagement initiatives.
+
+This inventory platform reflects their shared vision of practical, impactful, and technology-based solutions for workforce development and internal enterprise transformation.
