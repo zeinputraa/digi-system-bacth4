@@ -1,0 +1,39 @@
+{
+  "node_modules/html5-qrcode/esm/index.js": {
+    "file": "assets/esm-DAN7z4JE.js",
+    "name": "esm",
+    "src": "node_modules/html5-qrcode/esm/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "node_modules/qrcode/lib/browser.js": {
+    "file": "assets/browser-KGC4CRt0.js",
+    "name": "browser",
+    "src": "node_modules/qrcode/lib/browser.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-5uzy-cwi.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-Cq3xp0Cl.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "node_modules/html5-qrcode/esm/index.js",
+      "node_modules/qrcode/lib/browser.js"
+    ]
+  }
+}
