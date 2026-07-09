@@ -52,11 +52,17 @@ class DashboardController extends Controller
             ->orderBy('tanggal_pengajuan', 'asc')
             ->get();
 
-        // N+1 fix: filter low stocks at DB level with HAVING
+        // N+1 fix: filter low stocks at DB level with WHERE subquery to support strict SQL modes
         $lowStocks = Product::withCount(['units as units_count' => function ($query) {
             $query->where('status', StatusUnit::Tersedia->value);
         }])
-            ->having('units_count', '<', DB::raw('stok_minimum'))
+            ->where(function ($query) {
+                $query->selectRaw('count(*)')
+                    ->from('product_units')
+                    ->whereColumn('products.id', 'product_units.product_id')
+                    ->where('status', StatusUnit::Tersedia->value)
+                    ->whereNull('deleted_at');
+            }, '<', DB::raw('stok_minimum'))
             ->get();
 
         // N+1 fix: aggregate category stats with a single join query
@@ -112,11 +118,17 @@ class DashboardController extends Controller
             ->orderBy('tanggal_pengajuan', 'asc')
             ->get();
 
-        // N+1 fix: DB-level HAVING for low stock
+        // N+1 fix: DB-level filter for low stock using WHERE subquery to support strict SQL modes
         $lowStocks = Product::withCount(['units as units_count' => function ($query) {
             $query->where('status', StatusUnit::Tersedia->value);
         }])
-            ->having('units_count', '<', DB::raw('stok_minimum'))
+            ->where(function ($query) {
+                $query->selectRaw('count(*)')
+                    ->from('product_units')
+                    ->whereColumn('products.id', 'product_units.product_id')
+                    ->where('status', StatusUnit::Tersedia->value)
+                    ->whereNull('deleted_at');
+            }, '<', DB::raw('stok_minimum'))
             ->get();
 
         $activeProcurements = ProcurementRequest::with(['product', 'requester'])

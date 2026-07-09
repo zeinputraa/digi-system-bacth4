@@ -21,7 +21,13 @@ class CheckStockMinimum extends Command
         $products = Product::withCount(['units as units_count' => function ($q) {
             $q->where('status', StatusUnit::Tersedia->value);
         }])
-            ->having('units_count', '<=', DB::raw('stok_minimum'))
+            ->where(function ($query) {
+                $query->selectRaw('count(*)')
+                    ->from('product_units')
+                    ->whereColumn('products.id', 'product_units.product_id')
+                    ->where('status', StatusUnit::Tersedia->value)
+                    ->whereNull('deleted_at');
+            }, '<=', DB::raw('stok_minimum'))
             ->get();
 
         if ($products->isEmpty()) {
